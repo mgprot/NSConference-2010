@@ -1,0 +1,2052 @@
+
+**** instead of selecting all, copy and pasting - use File -> Save or Save a copy as ***
+
+*** See Alex Repty (@arepty) if you wish to contribute to Scotty's gift, we're still a little bit short. ***
+
+
+Calendar URL is http://ottersoftware.squarespace.com/storage/nsconference/NSConference_UK_Mac.ics in case you want to subscribe (thanks to @iamleeg/@sgaw)
+^^ Calendar has been updated to reflect changes
+Twitter tag is #nsconf, or follow/message @nsconfr to broadcast your tweets, auto-magically adding the #nsconf tag.
+
+{ PLEASE TYPE ON SEPARATE LINES UNTIL OTHERS HAVE FINISHED THEIR LINES }
+{ Two people editing the same line may cause the characters to mix }
+{ if they do, please send a screenshot of the window to monkeys@codingmonkeys.de }
+{ when putting this one in "Conference" mode, the links become clickable }
+
+NSConf Notes:
+=============
+
+MONDAY 1ST FEB
+--------------
+09:30 - 10:30 Conference Keynote: Engineering Life - Mike Lee (@bmf)
+--
+- Mike is Superman and lifted a car out the mud (http://img131.yfrog.com/i/yvsc.jpg/).
+- Reality is the state of things, relative to an observer; engineers solve problems by altering reality
+- Super secret algorithm for awesomeness: How will this be remembered? How should this be remembered?
+- Death Sucks, be remembered for what you achieved
+- Live life to the full
+
+- Not fixing a problem can be thought of as creating the problem.
+- Be the hero
+
+
+
+11:00 - 12:00 Spelunking OS X - Jonathan "Wolf" Rentzsch (@rentzsch)
+--
+(Welcome page is a LEGO Sherlock Holmes)
+- Spelunking: noun, the exploration of caves, esp. as a hobby.
+- Inventor of Indie conferences *faint* (Cx conferences)
+
+- Analysis, code injection, +extending
+
+- Static Analysis (The dead mouse is safe to analyze)
+- Runtime analysis: (the live mouse might bite back)
+- Hex education (Hex editors are our friend).
+- Hexedit: http://hexedit.sourceforge.net/
+- HexFiend by Peter Ammon is the current hotness. -> http://ridiculousfish.com/hexfiend/
+    - Non-viral open source.
+    - Supports HexFiend framework
+    - Can open files larger than available memory
+- Unix tools
+    - file
+        - tells you what type of file it is
+        - uses magic numbers?
+        - Apple's file also understand MachO formats
+        - usage: file /path/to/file
+        - example
+        alblue:~ alex$ file /bin/echo
+        /bin/echo: Mach-O universal binary with 3 architectures
+        /bin/echo (for architecture x86_64):	Mach-O 64-bit executable x86_64
+        /bin/echo (for architecture i386):	Mach-O executable i386
+        /bin/echo (for architecture ppc7400):	Mach-O executable ppc
+    - strings
+        - Apple enhanced
+        - Knows about MachO
+        - Will search for current architecture only
+        - strings TextEdit | wc -l
+        -   995 // Only current architecture
+        - strings < TextEdit | wc -l
+        -   3141 // All architectures
+        - @AlBlue - I have found using -c needs to be passed for Java .classes sometimes
+    - otool
+        - Knows MachO format
+        - Part of cctools
+        - TimmyOTool - GUI front end http://homepage.mac.com/brant/FileSharing1.html
+        - prints linked frameworks and libraries.
+        - example: $ otool -L TextEdit
+            TextEdit:
+        	/System/Library/Frameworks/Cocoa.framework/Versions/A/Cocoa (compatibility version 1.0.0, current version 15.0.0)
+        	/usr/lib/libSystem.B.dylib (compatibility version 1.0.0, current version 123.0.0)
+        	/usr/lib/libobjc.A.dylib (compatibility version 1.0.0, current version 227.0.0)
+        	/System/Library/Frameworks/CoreServices.framework/Versions/A/CoreServices (compatibility version 1.0.0, current version 44.0.0) ...
+        - print __OBJC section directly
+        - example otool -ov TextEdit
+            TextEdit:
+                Objective-C segment
+                Module 0x1ae90
+                    version 7
+                       size 16
+                       name 
+                    symtab 0x0001af50
+                	sel_ref_cnt 0
+                	refs 0x00000000 (not in an __OBJC section)
+                	cls_def_cnt 1 ...
+        - Disassembly           
+            - example otool -tV
+                TextEdit:
+                (__TEXT,__text) section
+                00002300	pushl	$0x00
+                00002302	movl	%esp,%ebp
+                00002304	andl	$0xf0,%esp
+                00002307	subl	$0x10,%esp
+                0000230a	movl	0x04(%ebp),%ebx
+                0000230d	movl	%ebx,(%esp)
+                00002310	leal	0x08(%ebp),%ecx
+                00002313	movl	%ecx,0x04(%esp) ...
+        - otx - an otool post processor
+            - http://otx.osxninja.com/
+            - Better spacing, looks for sections and spaces appropriately to divide the output.
+            - Shows local offsets.
+            - Shows machine references.
+            - Shows the string data segments.
+            - Use both, as otool *will* show things that otx won’t.
+            - Run each tool against each architecture, will show differences that may be important.
+        - otx-bblm -> a language module for BBEdit.
+            -http://github.com/0xced/otx-bblm
+        - class-dump (http://www.codethecode.com/projects/class-dump/)
+            - Reads MachO files
+            - Generates header files
+            - Use explicit architectures.
+            - example use (without -h arg)
+            /*
+             *     Generated by class-dump 3.3.1 (64 bit).
+             *
+             *     class-dump is Copyright (C) 1997-1998, 2000-2001, 2004-2009 by Steve Nygard.
+             */
+
+            #pragma mark Named Structures
+
+            struct CGPoint {
+                double _field1; ...
+            }
+            - Run with -H option, to help sort output results.
+            - Usage: class-dump TextEdit -H
+        - Snow Leopard - Snow Weasel?
+            - Open source examples in Dev downloads are not the same as the shipping versions in the OS
+        - MagicHat
+            - (GPL) http://code.google.com/p/magichat/
+            - GUI class-dump/CocoaBrowser/AppKiDo hybrid.
+            - Tells you what other classes call this method
+            - Danger, Will Robinson! Too easy to accidentally use undocumented API!
+            - crashed on 10.5.8+ :-(
+            - doesn't work on 10.6 either :-)
+
+            - V2 is work in progress (Wolf is sitting on it ;-) )
+
+- Runtime Analysis. (The mouse fights back!)
+    - gdb
+        - Easy to run from the command line: '$ gdb'
+        - If you can use the Xcode debugger, there's nothing to be scared of.
+        - '(gdb) attach TextEd<tab>' to find process ID
+        - '(gdb) detach' to get back out
+        - Good to track down release-build-only bugs or other hard to find stuff.
+        - Can breakpoint on code e.g.
+            break +[Controller initialize]
+            delete 1 // breakpoint 1
+            delete //all breakpoints    
+        - backtrace (bt) shows where you are in the app.
+            - This gives a stack trace for where you are in the app.
+        - po print object (invokes [obj description])
+            - You can type in raw hex addresses instead of most symbols (var names etc.)
+        - info symbol 0x1234
+        
+            will save your life ... // Mike Lee to the rescue again?
+        - info address +[Controller initialize]
+            0x23fg
+        - info symbol 0x23fg
+            +[Controller initialize] in section ...    
+        - Example:
+            - app with its own WebKit built in
+            - open contextual menu, contextual menu plugin by 3rd party gets pulled in
+            - plugin pulls in the real WebKit, hilarity ensues.
+        - F-Script (http://www.fscript.org/)
+            - F-Script injector service provided for Snow Leopard which does what F-Script anywhere used to do.
+            - F-Script Object Browser.
+                - Play around with the 'Select View' button.
+
+
+- Code Injection
+
+- App Plugins (documented and undocumented)
+    - Example: Xcode and MoGenerator. (and xmo'd) <http://rentzsch.com/code/mogenerator>
+    
+
+- Input Managers.
+    - Gone by the wayside.
+    - Died with 64-bit.
+
+- Scripting Additions.
+    - The new input managers.
+    - Example: create an AppleScript verb, like "pwn", then send [app pwn] - it loads your code.
+    - Can be 64-bit.
+    - Send a AppleScript command to an app, it loads your Scripting addition implementing that verb, and bang, Bob's your uncle (or in some cases @tarasis' wife ;-) ).
+
+- SIMBL  (http://www.culater.net/software/SIMBL/SIMBL.php)
+    - Re-written to use 64-bit scripting additions.
+- mach_inject (http://rentzsch.com/mach_inject/)
+    - Cool fire-breathing mexican robot mascot (el swizzlo ?)
+    - Non-viral, open source.
+    - Doesn't look like Bender from Futurama ...
+    - mach-inject Recipe
+        - Grab a mach task reference
+            task_for_pid()
+        - Allocate a remote thread stack
+            vm_allocate()
+        - Allocate and populate thread code block
+            stat()
+            & vm_allocate()
+            & vm_protect() -- make it executable
+            & vm_write()
+        - Allocate, populate & start thread (in another process!)
+            thread_create_running()
+        - Code is running on a pThread
+- mach_inject & procmod (Apple is not amused)
+    - task_for_pid fails on 10.4+ if not procmod, but works if signed on 10.6+
+    - Apple targest mach_inject()
+    - Does nothing about input managers.
+    - in 10.4 task_for_pid fails unless you’re root <-- missed rest!
+    -
+
+Extending and enhancing.
+
+- dyld __interpose
+    - recipe
+    - Undocumented dyld feature, (Amit Singh)
+    - Built in function overriding
+    - 10.4 and later (earlier?)
+    - Craft a Mach-O dy lib with __interpose section in a __DATA segment
+    - Section contains pairs of function pointer: one for overrider and one for overridee.
+    - (Example code in a slide -> wait for the video!)
+
+    DYLD_INTERPOSE_LIBRARIES= ...
+    Documented in Amit Sing's OSX Internals book (Google Book cache link)
+    http://books.google.com/books?id=K8vUkpOXhN4C&pg=PA73&lpg=PA73&dq=DYLD+INTERPOSE+LIBRARIES&source=bl&ots=OJnkPUWuUz&sig=D2H1ND-Uc4U5EWGQ2Wru9qghqLE&hl=en&ei=4cFmS5SXIoyM0gSXtM3JBg&sa=X&oi=book_result&ct=result&resnum=4&ved=0CBEQ6AEwAw#v=onepage&q=&f=false
+
+- mach_override
+    - http://rentzsch.com/mach_override
+    - Can call a new implementation, or use the default.
+    - No intermediate state, Only beginning and end. (Better thread safety?)
+    - Single Instruction overwriting.
+        - Replaces a single instruction
+        - Always on ppc, doesn't always work in i386
+    - Escape Island is allocated at the end of the processes address space.
+        - Always allocated
+    - Reentry island.
+        - Optional code block which can be used to do work afterwards
+    - works by replacing first instruction with jump
+    - replaced code executes, contains copy of first instruction
+    - branch to second instruction of original code
+
+- Swizzling
+    - Higher level way of replacing objc methods.
+    - ObjC blessed since 10.5 method_exchangeImplementations()
+        - http://developer.apple.com/mac/library/documentation/Cocoa/Reference/ObjCRuntimeRef/Reference/reference.html#//apple_ref/c/func/method_exchangeImplementations
+    - JRSwizzle (10.3-10.6)
+        - http://github.com/rentzsch/jrswizzle
+        - Easy compatible swizzling
+        - KBallard method
+        - NSError returned.
+        - Unit Tests
+    - SwizzleKit (tackling 64-bit) @smorr
+        - http://github.com/smorr/SwizzleKit
+        - Leverages Obj-C runtime
+        - addes methods to existing classes.
+        - swizzle existing methods to added methods
+        - dynamically create and subclass existing hidden classes.
+        - Macros, macros, everywhere.
+
+- Unsanity's Application Enhancer (http://unsanity.com/haxies/ape)
+    - Commercial
+
+
+Philosophy.
+    - Generally, developers create small, tightly focused apps.
+    - Software devlops by evolving.
+    - See what user's want before creating it.
+        - If people are making additions, maybe this is what you should be adding?
+
+
+12:30 - 13:30 Clean Code - Dave Dribin (@DDribin)(http://bitmaki.com)
+-- 
+- Best Cocoa developer ever (at least, according to his mum)
+- Code obfuscated example on screen in about 15 lines (no-one can read it, even at the front)
+    - Prints out the 12 days of christmas.
+    - Paper investigating/covering it
+            http://research.microsoft.com/en-us/um/people/tball/papers/XmasGift/
+    - Image of good code/bad code: "WTFs per minute"
+            http://ptrace.fefe.de/wtfm.jpg
+
+"programs must be written for people to read, and only incidentally for machines to execute" Abelson and Sussman quote.
+
+- External quality is what the end-user sees.
+    - Does it crash?
+    - Does it do something useful?
+
+- Internal quality is what it looks like to the developer.
+    - Although related to External.
+    - Messy code is expensive.
+        - More bugs
+        - Bug fixes take longer
+        - New features take longer
+        
+- Practical tips.
+    - Choose good names
+        Classes/Methods/Variables
+    - Naming classes
+        Nouns, not verbs
+            NSArray, NSXMLParser, Episode, Podcast Generator
+        Try to avoid generic terms
+            Manager, Processor, Data etc.
+    - (same for variables/methods)
+    - Code you can delete is less code you have to maintain !
+- Code smells
+    - Duplication
+        - once and only once (OAOO)
+        - Do not repeat yourself (DRY)
+        - Keep it short (Classes and methods should be as short as possible but no shorter)
+          methods 10-15 lines, classes 100-300 lines
+    - use #DEFINES/static variables instead of magic numbers
+        - I prefer statics for the auto-completion support.
+    - Aim for readability and maintainability
+    - Longer methods make it harder to figure out what they actually do
+    - Even Unit Test code should be clean, or people will stop writing/using them
+    - Tests which are hard to test should get refactored.
+    - Make delegates for specific tasks ?
+    - Perhaps only -applicationWill... and -applicationDid... methods should go in the ApplicationDelegate
+
+- Categories
+    - Prefix categories on classes you do not own !!!
+    - Improves readability, avoids category smashing
+    - Differentiates between system code and code you own !
+
+- Cocoa Bindings
+    - Not always the best
+    - Consider it a scaffold.
+    - e.g. when using Bindings for table/outline views, some columns can still be datasource-driven
+    
+- Model View Controller and Coupling (I recommend the Cocoa Design Patterns book which is all about reducing coupling. http://www.cocoadesignpatterns.com/)
+    - Also, CDP book has a good overview of the different types of controller (coordinating and mediating) and some commentary on the nature of hybrid objects
+    e.g. view-controllers, model-controllers, etc.
+    - Try to reuse your model code on all 3 platforms (iPhone/iPad/Mac)    
+    - Reduce Coupling (in order of *Dave’s* preference)
+        - Delegates
+        - Notifications
+        - KVO (Key-Value Observing). Too much KVO can lead to a big mess.
+        - KVO can be really hard to follow, difficult to figure out what is going on
+        - Delegates are better over KVO; easier to follow the code flow.
+
+- Singletons
+    - Ensure a class only has one instance, and provide a global point of access to it (Gang of Four)
+    - Bad idea. Some consider them to be code smells. (Erich Gamma)
+    - 99% of the time you're better off not using them
+        - example: consider passing around managed object contexts rather than leaving it to a method to get the moc from the delegate.
+    
+- Time
+    - Code tends to deteriorate over time
+    - Code starts off good, but over time it gets worse (Code Rot)
+    - Try to avoid it
+    - Make it work, then make it Clean ! (before you check in)
+    - Always check in code cleaner than before you touched it ! (The Boy Scout Rule)
+    
+
+- I suggest reading Clean Code by Uncle Bob (http://tinyurl.com/5rv9dy) 
+
+Q&A
+Q: Globals bad or conditionally bad?
+A: Globals makes code difficult for reuse and testing
+
+Q: Isn't KVO better than delegates? (Less coupling between objects)
+A: Small amounts of KVO are OK. Too much is difficult to maintain and debug. Use, don't abuse.
+
+Q: Commmenting: How much is too much?
+A: It's better to comment why you are doing something, not what you are doing.
+
+    Mentioned Doxygen http://www.stack.nl/~dimitri/doxygen/
+
+I agree that we don't necessarily need line by line comments, but a general approach to inline documentation to note what methods and classes are *for* will
+pay for itself in the long run.
+
+There's quite a few confusions between 'comment the intent' and 'comment the implementation'. The former is useful, the latter, not so much. - @AlBlue
+
+-------
+
+
+15:00 - 16:00 Data Presentation in Mac Apps - Drew McCormack (@drewmccormack)
+-- 
+Drew starts by showing data in the terminal and then speeding it up where you can see a 'wave' form in the numbers
+
+(obligatory Matrix reference)
+
+- There are many ways to represent the same set of data
+    - Example slide of the different ways that iTunes shows information.
+    - The question is "What interface are you going to stick on your model?"
+    - Use the view your users are expecting
+
+List Views
+    - example: iPhone
+        - UITableView has only 1 column
+        - iPhone is dominated by listviews
+    - example : iPad
+        - Mail app on iPad
+    - example : Mac
+        - Tweetie
+        - Coverflow in iTunes (doesn't look like it but it's some form of a List View )
+        
+        
+When?
+    - An 'array' of data items
+    - Limited Space
+    - Coverflow is the Exception, as it is used for flashy presentation, rather than saving space
+
+- Cell Based
+   - Tweetie
+   - NSTableView
+        - Small Memory footprint
+        - 2D Data (more columns)
+        - Works on legacy OSs
+        - Fast
+
+- View Based
+    - iPhone
+    - NSCollectionView
+        - Easier to program
+        - Uses views
+        - Easy binding
+        - Easy event handling
+
+NSCell approach is 'stamping' out the different rows in a list view
+
+- Custom cells
+    - Subclass NSCell, NSImageCell or NSTextFieldCell (others?)
+    - Override copyWithZone: (NSCopying protocol)
+    - Invoke NSTableColumn's setDataCell: (or specify in IB)
+    - Draw in drawWithFrame:inView:
+    - Layout drawing in code not IB
+    - Can use other cells to help draw content.
+    - Data will be compound (e.g. NSDictionary)
+    - Doesn't work so well with bindings
+    - Can be quite a lot of work to implement (custom drawing)
+
+
+- NSCollectionView
+    - Each cell is an NSView
+    - Bind prototype view to its owning NSCollectionViewItem (itemPrototype can be set in IB)
+    - NSCollectionViewItem has .representedObject property. Generally use to store the model object, and bind to that.
+    
+
+- Tabular views (e.g. Numbers.app)
+    - Take up a lot of space
+    - over-used maybe.
+    - Can use an inspector (cmd+i) to show extra data instead.
+    - Advantages
+        - Very Standard
+        - Easy to use
+        - Understood by users
+        - Easy to scan fields
+        - Easy to sort
+    
+    - Disadvantages
+        - Very standard
+        - Large Screen Area
+        - Wastes Space
+        - No priority given to data
+    
+
+
+- Collection view
+    - Advantages
+        - Visually interesting
+        - Proximity of data
+        - Compact
+        - Showcase one Field
+    - Disadvantages
+        - Difficult to scan
+        - Sorting less standard.
+
+
+- Advanced Tables
+    -
+
+When does NSTableView not cut it?
+- row/col span missing
+- difficult cell layout
+-     <=  missed the slide, anybody? (sorry, too fast) (Yeah too fast for me too :-( )
+    
+
+- WebKit
+    - Advantages
+        - Complex layout
+        - Flexible
+        - Common technologies
+        - Good for presentation
+        - Best when data is static
+
+    - Disadvantages
+        - Not cocoa (i.e. HTML/DOM for presentation, although it does have ObjC API)
+        - Many technologies
+        - Work with DOM
+        - Interaction difficult
+        - WebKit poor documentation
+
+
+- Beyond Text
+    - Graphical visualizations (Graphs from Google - http://code.google.com/apis/chart/)
+    - There is no standard Cocoa library for data visualization
+    - http://bit.ly/advancediphonecoreplot
+
+CorePlot http://code.google.com/p/core-plot/
+    - 2D visualisation library for Mac/iPhone
+    - Apple haven't made a *public* framework for (GraphKit, internal library - http://www.theregister.co.uk/2008/11/17/mac_secrets_graphkit/).
+    - Code-a-thon for CorePlot at Apple's WWDC
+    - New BSD license (non-viral)
+
+
+Objectives
+    - Complete plotting framework
+    - Cocoa API
+    - iPhone and Mac
+    - Integrate with Apple frameworks
+
+
+Status
+    - No official release yet
+    - Is usable, but in flux
+    - Scatter and line plots
+    - Bar plots (histograms) horizontal/vertical
+    - Financial Plots.
+    - Pie Charts. (primitive)
+    - Quartz Composer patch.
+
+
+Built upon CoreAnimation (so works on Mac/iPhone) and future looking to animate properties
+
+
+
+16:30 - 17:30 Core Animation - Marcus Zarra (@mzarra)
+-- 
+"Beyond the one line of code"
+
+    - What can I do with Core Animation? -- pretty much everything you want. (Although you can't persist data with it. Or sync stuff. Or hit things with it.)
+
+use core animation to blow things up (make transitions and state changes obvious)
+you want your app to mimic the real world as much as possible
+it's all about giving the user feedback
+
+- examples
+  - File deleted/burning into flames (Delicious Library)
+  - Folder springing open as you drag a file over the top
+  - Real world feedback to the user whilst interacting
+  
+- Implicit animations (window appearing) are just a one-liner - opacity going from 0.0 to 1.0 over 1s through UI transaction
+- Explicit animations are where you need to perform multiple animations to show an item
+
+
+
+- CABasicAnimation
+ - is not basic, can do a lot
+ - 80% of the time, this is the one to use
+ - two properties to manipulate
+    - toValue
+    - fromValue
+    - NSNumber/NSValue object (e.g. inc. rectangles)
+   [fromValue:[NSNumber numberWithFloat:0.0] toValue:[NSNumber numberWithFloat:1.0] duration:1] // psuedo code - can anyone improve?
+    - Tweening.
+    - repeatCount = 1e100f == infinite repeat
+        See: http://developer.apple.com/Mac/library/documentation/Cocoa/Conceptual/Animation_Types_Timing/Articles/Timing.html
+        not defined in header files
+
+- Demo
+  - 270 line of code app, of which 150 was setup/boilerplate; 10 lines of animation
+
+- CAKeyframeAnimation
+    - More than two points
+    - Array of (NSValue/NSNumber) values
+    - Can adjust time floats to control time values (such as different speeds between keyframe animations
+    - CALayer: 'undefined properties' - can use [layer setValue:val forKey:@"Foo"] => is this the right name, anybody? I favour "extensible properties", but I am biased
+        - These are KV observable.
+
+http://developer.apple.com/Mac/library/documentation/Cocoa/Conceptual/CoreAnimation_guide/Articles/KVCAdditions.html#//apple_ref/doc/uid/TP40005299
+"Both CALayer and CAAnimation are key-value coding compliant container classes, allowing you to set values for arbitrary keys."
+^^ Suggest 'kv coding compliant container classes' is what's used 
+    - A layer can feed you back information using a delegate (weird catch: layers retain their delegate)
+    - can use other types of objects e.g. structs (translation.x/y/z, rotation.x/y/z)
+
+
+contact at marcus@cimgf.com
+
+Q&A
+"How do you mix two animations to flow one from another?"
+-[CALayer presentationLayer] will show you where it is right now
+Setting a separate animation will overwrite (and set to zero) the position
+You then find out where it is, apply a new CAAnimation and move to a different location"
+
+Animations aren't integrated with hit testing, so you have to do extra work yourself to find out where the object is. i.e. hit test the presentation layer.
+
+
+
+
+
+- Discount code through Prag Prog at the end of the conference ?
+
+
+while(TRUE) // goto below considered harmful, huh?
+{
+18:00 - 19:00 Drinking
+mmmm, beer
+-- 
+}
+
+19:00 - 20:00 Eating (drinking continued...)
+-- 
+
+
+
+20:01 goto 18:00
+
+
+TUESDAY 2ND FEB
+---------------
+
+
+09:00 - 10:00 Coca Design Patterns that Leverage the Objective-C Runtime - Jeff LaMarche (@jeff_lamarche)
+-- 
+
+http://iphonedevelopment.blogspot.com
+jeff_lamarche@mac.com
+
+Cliché - Can't see the forest for the trees.
+    - The risk of missing the 'big picture'
+    - Tree based thinking (details)
+        - This is where most developers expend their effort.
+    - Forest based. (overview)
+    
+
+Basic Idea
+    - Write classes that contains common logic expressed generically
+    - Determine properties, methods, instance variables at runtime if relevant and take them into account so logic works for subclasses as well.
+    - Add convenience methods based on property names (optional)
+
+
+Objective-C is different
+    - Others wonder why we don't have
+        - Abstract classes
+        - Virtual methods
+    - Not an oversight. This is by design
+
+
+- What the runtime can do
+    - while application is running, determine or add :
+        - properties
+        - iVars
+        - instance methods
+        - Class Methods
+        - And More
+        - http://developer.apple.com/mac/library/documentation/Cocoa/Reference/ObjCRuntimeRef/Reference/reference.html
+
+Stay away from this:
+    - Snippets
+    - Copy & Paste
+
+Example: (for missing stuff)
+    - SQLitePersistentObjects (something that Jeff is working on)
+        - http://code.google.com/p/sqlitepersistentobjects/
+    - Similar to Ruby ActiveRecord
+        - Instead of dynamically creating class based on database table structure, creates table structure based on declared properties.
+    - Has been "end of lifed" since Core Data came out
+
+- Dangers
+    - The Objective-C Runtime can give you access to stuff Apple doesn't think you should use
+        - Mac: risk of breaking and having customrs hate you.
+        - iPhone: risk of app store rejection *and* having customers hate you.
+    - Broadly speaking, generic algorithms perform worse than specific custom ones
+    - Complexity
+        - Danger, but also a benefit
+    - Knuth quote: Don't worry about small efficiencies. Basically, don't optimise before profiling.
+
+"We should forget about small efficiencies, say about 97% of the time: premature optimization is the root of all evil. Yet we should not pass up our opportunities in that critical 3%.
+
+A good programmer will not be lulled into complacency by such reasoning, he will be wise to look carefully at the critical code; but only after the code has been verified."
+
+-- Donald Knuth
+
+
+Starting Easy:
+
+// The new way
+#import <objc/objc-runtime.h>
+
+or
+
+// The old way for iPhone 2.0
+#if (! TARGET_OS_IPHONE)
+#import <objc/objc-runtime.h>
+#else
+#import <objc/runtime.h>
+#import <objc/message.h>
+#endif
+
+
+Example: Iterating Class' list of properties
+Runtime is all C functions.
+
+- Example of getting properties of a class
+objc_property_t* list;
+int count = 0;
+list = class_copyPropertyList([self class] &count);
+for(i=0;i<count;i++)
+  objc_property_t prop = list[i];
+  name = property_getName(prop)
+free(list) // but not 'prop'
+
+Memory Management Rules (same as Core Foundation)
+    - "create" or "copy" in name - you are responsible for releasing it
+    - "get", anything else, you don't own it so don't need to release it. If you do, it will blow.
+
+Gotcha
+    - Keep this in mind:
+    - Superclass inheritance doesn't happen automatically like it does when you're working with objects
+    - The runtime is what implements inheritance
+    - Recursion is our friend.
+        - If !NSObject, get the dictionary of our parent {seems risky to me, what if you're working with NSProxy?}
+        - list all properties/ivars/etc. in the dictionary
+
+Remember your place
+    - Make sure to take into account the fact that your subclasses might also be subclassed
+    - Keep thinking generic!
+    - Recursion can be expensive
+        - May want to consider caching list of relevant properties
+        - But ... be careful
+            - properties, methods ivars can all be added at runtime!
+
+Detecting Property changes
+
+    - No perfect answer
+
+    - Have to copy the list of items to get count
+    - If the count changes, re-acquire properties
+    - Technically possible to delete properties, but not common
+
+- Dynamic Method creation
+    - Being able to dynamically add methods to a running method is phenomenal for designing Super Superclasses
+    - You do have to declare the method, usually in a category or extension, but you don't actually have to write the method.
+    - The process if fairly straightforward for Instance Methods
+        - Runtime documentation shows exactly how to do it.--> http://developer.apple.com/mac/library/DOCUMENTATION/Cocoa/Conceptual/ObjCRuntimeGuide/Articles/ocrtDynamicResolution.html
+        
+        (You can override +resolveInstanceMethod:(SEL) and use class_addMethod())
+        
+
+
+- What about Class Methods?
+    - Apple's documentation isn't completely clear on the process of adding class methods.
+    - The Process is the same, except...
+        - Class objects in Objective-C are called the "Meta Class" in the runtime functions
+        - You have to explicitly get a reference to the meta class even when your code is in the meta class.
+        - You have to add class methods to the meta class, not the class
+
+(Use objc_getMetaClass() & class_addMethod, in an override of +resolveClassMethod e.g.)
+(Similarly, sel_getName() for a method. There is _cmd local var (hidden) in every method containing the selector, so you can re-map several methods to one)
+
+
++(BOOL)resolveClassMethod:(SEL)sel
+{
+  name = getName(sel);
+  methodName = [NSString with:name];
+  if( [methodName hasPrefix:@"findBy"] )
+  { // handle method based on findByXxxx
+  }
+}
+
+Think about ways that the runtime can make things easier for us. But it doesn't have to be used all the time (or even any of the time). e.g. Dynamic method implementations may not be needed, but in cases where they are, it's worth the effort to use the runtime rather than write 'straight' code to implement every case.
+
+
+Q&A
+Should you use free or CFRelease?
+It's of course not really CoreFoundation, don't CFRelease() or -autorelease. But same naming conventions for same ownership.
+
+
+10:30 - 11:30 Brushing Up on OpenCL - Andy Finnell (@macgeek02) http://losingfight.com/
+-- 
+
+http://losingfight.com/blog/2009/12/17/compiling-opencl-kernels-with-xcode/ describes some of the code in this presentation
+
+Is this on Core Image or OpenCL? The slides said CL but the presentation list says Core Image ... Maybe both? CoreCL?
+Watercolor
+
+Demo of an app that models the effect of painting with watercolor.
+Will talk about modelling this and then how to implement this with OpenCL.
+
+Why OpenCL and not CoreImage? CoreImage isn't really the right thing. Thought OpenCL was for the dudes with the white coats and acronyms after the name.
+
+Modelling processes in watercolor spreading using OpenCL, then rasterises with Core Image after the fact. No support for conditionals etc. Lastly, on Snow Leopard, Core Image is implemented using Open CL.
+
+Core image is only about manipulating pixels
+
+
+- OpenCL Setup
+    - Context (code?)
+    - Device
+    - Queues (where all the interesting work happens)
+
+- Open Execution
+    - Kernel (funtion in OpenCL language) with in arguments 
+    - Associated with a queue (executes kernel asynchronously)
+    - Buffer is more for complex arguments, in/out buffers
+    - Out parameters.
+ - Asynchronous execution, so triggers Events.
+ - Events used for status of submitted work (started, running, finished)
+    - can be used to hook up kernels in dependent event chains
+  
+- Kernels
+    - Open CL programs have kernels
+    - *.cl extension
+    - Just in time compilation.
+    - specified with __kernel compiler attribute
+    - also uses the __global attribute for arguments
+
+(OpenCL conversion is pretty cool, and uses LLVM under the covers to achieve the JIT stuff. Can be handed off to the GPU as is or emulated by CPU. http://en.wikipedia.org/wiki/OpenCL http://llvm.org/Users.html - speaking of which, MacRuby compiles down with LLVM as well, but that's a different topic...)
+
+- (W)rappers
+    - No CoreFoundation types
+    - No Cocoa types or equivalent
+    - No retain/release semantics
+    - write wrapper classes and use them instead of OpenCL directly
+
+
+
+- Watercolor model
+    - pushes water and pigment onto the layers
+    - canvas represented as a height-map (for texturing)
+    - view takes the physical properties and converts into pixels
+
+Calculating velocity (... of an unladen swallow) African or European? (with or without coco[a]nuts?) - nah, the cocoanut presentation is later
+
+
+
+
+- Example
+__kernel void UpdateValues(
+  __global float *waterVelocity
+  __global float *heightMap
+) {
+  // passing in 2d array, accessing as 1d array
+  // only parameters in a kernel are a 1d array
+  int2 coord = (int2) get_global_size[0],get_global_size(1)) // uses 2-vector ints
+  velocityData = ... 
+}
+
+OpenCL is very sensitive to buffer overruns - will crash in OpenCL runtime
+
+
+
+(kitten intermission)
+
+OpenCL language supports 'vectors' which are extensions to some standard C types.
+
+OpenCL Specification -> http://www.khronos.org/registry/cl/specs/opencl-1.0.29.pdf
+
+
+"Procedural noise" sample code site shows how to punt out data from OpenCL to OpenGL to a GLView
+
+http://developer.apple.com/Mac/library/samplecode/OpenCL_Procedural_Noise_Example/index.html
+
+http://svn.losingfight.com/watercolor
+
+
+12:00 - 12:30 Version Control Shoot Out - Dave Dribbin (@ddribin)
+--
+
+- What is it ?
+    - Time Machine for your Source Code
+    
+- Why Use it ?
+    - Persistent Undo
+    - Freedom
+    - Develop multiple version simultaneously
+    - Assists multi-user development
+    - Experimentation
+    
+
+- VCS Terminology
+    - repository
+        - the vcs storage element (for central servers)
+    - working copy
+        - local copy of code on your disk, maybe with changes
+    - checkout
+        - different things to different systems
+    - revision - the number
+    - commit - the change
+    - tags - named revisions
+    - branch - where code development splits off
+
+- history
+    - SCCS 1972 (source code control system)
+        - Single directory
+        - Repository stored in SCCS/
+        - working copy was single directory
+        - pessimistic locking
+        - Branches
+        - Merging
+        - Stores first version and then series of diffs, so slowed as evolved
+    - RCS 1982 (Revision Control System)
+        - Single Directory
+        - Repository stored in RCS/
+        - Pessimistic locking
+        - Branches
+        - Merging
+        - Tags
+        - (RCS was basic for CVS files - that's the ,v IIRC)
+        - Stored latest version first, with diffs to previous
+    - CVS 1990 (Concurrent Version System)
+        - Separate repository and working copy
+        - Multiple directories
+        - Optimistic Locking
+        - Client/server support
+        - First centralized VCS
+    
+    - SVN 2000/2004 (1.0) (Subversion, http://subversion.tigris.org/)
+        - "A better CVS"
+        - Designed for client/server usage
+        - Atomic commits
+        - Tracked renames
+        - Current version 1.6.1
+        - http://www.youtube.com/watch?v=4XpnKHJAok8 - Linus on Git (No way to do CVS right)
+        - Nonviral license, multiplatform
+    - BitKeeper http://www.bitkeeper.com/
+        - Adopted by Linux Kernel in 2002
+        - Closed source, but free for Linux devs
+    - git http://git-scm.com/
+        - Developed as BitKeeper replacement
+        - Distributed
+        - Version 1.0 released in December 2005
+        - Current Version 1.6.2.3
+        - Books
+            - http://book.git-scm.com/
+            - http://progit.org/
+        - Worthwhile reads
+            - http://nvie.com/archives/323#more-323
+        - Adopted by Apache Foundation and Eclipse Foundation as DVCS
+            - http://git.apache.org
+            - http://git.eclipse.org
+        - GitHub (http://www.github.com)
+        - GUI
+            - http://gitx.frim.nl/
+    - Mercurial (Hg) http://mercurial.selenic.com/
+        - Also developed as replacement for BitKeeper
+        - Distributed
+        - Version 1.0 released in March 2008
+        - Current version 1.
+        - Supported by Google Code
+        - BitBucket(http://bitbucket.com)
+    - Bazaar (BZR) http://bazaar.canonical.com/
+        - Developed and funded by Canonical
+        - Now at version 2.0.3 (2.1.0b4)
+        - Distributed
+    - Others
+        - Perforce
+        - Visual Source Safe
+            - "I've never heard anything good about DVCS" @ddribin
+        - ClearCase
+        - StarTeam
+
+    - Centralized VCS
+        - Repository central
+        - 
+    - Distributed VCS
+        - WC and repo is same thing
+
+    - Opinion
+        - SVN: Pros
+            - Most popular
+            - Cross platform
+            - Broad tool support
+        - SVN: Cons
+            - .svn droppings
+            - Separate repository and WC (no offline commits)
+            - Tags/branches/trunk convention (ddribin considers that too loose, free-form, e.g. tag uneditability not enforced)
+            - svn:externals (don't work well, public/private URLs problematic)
+            - Centralized
+        - DVCS popularity:
+            - Git > Mercurial > Bzr > Darcs et al.
+            - NB Google chose Mercurial for http://code.google.com owing to incomplete support for HTTP and the way the back-ends work; this is being addressed by Shawn Pearce of Google to implement better HTTP support
+            - http://www.kernel.org/pub/software/scm/git/docs/git-http-backend.html
+            - NB all of this is subjective :-) That's why it's under "opinions"?
+        - DVCS
+            - Distributed Version Control System
+            - Instead of one single version system (central)
+            - Centralized VCS (CVS, SVN etc)
+            - Distributed (Hg, Git, Bzr)
+        - DVCS benefits 
+            - Better branch/merge
+            - offline commits
+            - fast history browsing
+            - faster backup
+            - Don't need commit access
+        - DVCS Myths
+            - All history == huge working directory
+            - No central server == chaos
+        - Git pros
+            - fast
+            - local branches
+            - git-svn // front end for looking at a SVN with Git
+            - http://www.github.com
+                - Also http://codaset.com
+            - compact storage
+        - Git cons
+            - confusing ui
+                - OS X GUI: http://gitx.frim.nl/ <-- solves this con ;)
+            - need more knowledge to get most of it
+            - moderately difficult to set up own server
+                - Easier than it used to be:
+                - http://www.kernel.org/pub/software/scm/git/docs/git-http-backend.html
+                - http://www.kernel.org/pub/software/scm/git/docs/git-daemon.html
+            - poor Windows support (like we care ;-)
+            - mutable history
+                - But like memory management in Cocoa; follow the simple rules and there are not problems with this in reality.
+                - History _may_ be mutable, but the objects (commits, files, trees, tags) are immutable, so you can always go back and fix a problem.
+                - @AlBlue - this is quite useful when you've been working on a single logical change, but doing lots of commits in place as you work (like multiple file backups). When you're done, useful to collapse into a single commit to push to a remote master.)
+                    - git rebase -i and then squash commits.
+            - kludgy submodule support (extra cmd to check out submodules?)
+        - Mercurial pros
+            - fast
+            - simpler branch model
+            - similar command set to svn
+            - hg addremove
+            - bitbucket
+            - easy server install
+        - Mercurial cons
+            - 
+            - No submodule support
+            
+        - Bazaar
+        
+    Git : Mercurial :: Linux : Mac OS X <- more to do with UI    
+    Git annoyances
+        - git add overloaded
+        - git reset --hard ^HEAD
+            - This resets the state of your version to the previous HEAD (^=previous, ^^=previous previous etc.)
+                - Take care when there are merges in the history.
+            - I prefer to use git reset --hard <sha>
+    DVCS downsides
+        - merging not always sunshine on OS X
+        - easy to get out of sync with canonical repo
+        - forking
+            - forking is a *downside* of DVCS? Surely that's one of its biggest advantages? @AlBlue +1
+            
+    Unconventional uses for DVCSes
+        - manage /etc (i.e. time machine for /etc folder)
+        - sample code (check it out, edit it locally w. unlimited undo)
+        - I had an idea for distributed Core Data …   
+            
+    
+            
+
+
+
+12:30 - 13:00 Code Signing - Graham Lee (@iamleeg)
+--
+
+Big picture:
+    - Even just a Name Badge contains information
+    - Code "identity" to find out stuff
+    - "identity" = app's identity, and signer's identity
+
+    - Designated requirement.
+        - If this condition is satisfied, then it is _me_
+    - Identity is verified on each page-in
+    - A Malicious Monster creates a Malicious Library to attack Safari. They can sign as Malicious Monster or not, but can't pretend to be anyone else.
+    - Same ident and reqs: Same app
+    - Keychain services with unsigned apps: You're on the old 10.4 code path.
+        - Doesn't say unsigned==legacy explicitly, but bugs with unsigned apps don't get fixed, so effectively.
+    - Parental controls
+        - used to use bundle ID, easily changed
+        - Now uses code sign ident, changes to bundle ID don't work around Parental Controls anymore
+        
+- Demo
+    - SecCodeCopySelf() in Timer to poll for old app signature
+    - SecCodeCopyDesignatedRequirement() & SecCodeCheckValidity()
+    - Detects whether the app is signed.
+    - Requirement/Identity are a combination. They must match.
+    - Sig can be valid (for Graham Lee) but requirement can require it be signed by Apple --> Still app can't be validated
+    - Give codesign -dvvvv's (note that it takes lots and lots of v's to get more info)
+
+
+LUNCHTIME SESSIONS:
+
+- Nik Fletcher (@nikf) on text and microcopy
+    - Don't let the marketing guys write your program copy
+
+- Jason Harris (@smeger) uses HTML for UI building
+    - Don't build this huge string
+    - Use XSLT to mess with the DOM
+    - script object in WebView for callbacks
+    - Code up on http://www.github.com/smeger
+
+
+14:30 - 15:30 The Many Faces of Data Persistence - Aaron Hillegass (@AaronHillegass) 
+-- 
+Big Nerd Ranch Inc
+aaron@bignerdranch.com
+
+"All the data that's important to us is being put on a server and is accessible anywhere in the world"
+
+The Cloud!
+
+- The File is Dead, Long Live the Cache!
+    - started with GMail, Google Docs
+    - IMAP/SVN/Git/MobileMe
+    - Keynote on a system with no Finder
+    - "hard drive is a cache"
+    
+- Sync Services
+    - Mac only
+    - Not really for sharing
+    - e.g. MobileMe
+    - @mzarra's ZSync on iPhone? (in the future)
+    - http://www.zarrastudios.com/ZSync/ZSync.html // works on OSX too
+
+- Necessary knowledge
+    - Each data chunk needs:
+        - Unique ID
+        - Creation date
+        - Modification Date
+    - Each client needs
+        - Time of last sync
+        - List of chunks since last sync
+    - Server must know when chunks are deleted.
+
+- Algorithm
+    - Client created data after last sync? Copy up
+    - Server created data after sync? Copy up
+    - Modified on client after sync? Replace server
+    - Modified on server after sync? Replace client
+    - ...    
+    - Deleted on client after sync? Delete on server
+    - Deleted on server after sync? Delete on client
+    - Referential integrity is the tricky bit.
+    
+- Raw data is not enough.
+    - Metadata for Spotlight.
+    - Image/PDF for Quick Look
+    
+- Garage Band example
+    - Output/metadata plist
+        <xml><dict><key>...</key></dict></xml>
+    - Output/arrange_screenshot.tiff
+    - Can zip them up to a single file (but contains logically many)
+
+- Change history
+    - can see history/changes and who did what
+    - good for blaming people
+
+- NSArchiver/NSUnarchiver
+    - Been around since 1991
+    - -initWithCoder:(NSCoder *)c {c decodeValuesObObjCType]}
+    - -encodeWithCoder:(NSCoder *)c { [c encodeValuesOfObj()]}
+
+- Keyed archiving
+    - initWithCoder:(NSCoder *)c { [c decodeIntForKey@"Flub"]; }
+    - encodeWithCoder:(NSCoder *)c { c[encodeInt:flub forKey:@"Flub] }
+
+- Can only do keyed archiving on the iPhone
+
+Keyed vs Unkeyed
+Keyed
+    - can evolve using keys
+unkeyed 
+    - faster
+    - smaller
+    - can evolve by version#
+    
+
+- Archiving is awesome!
+    - The Nib file being unarchived and object oriented being decoded
+    - Can do dictionaries
+    - Slick mehchanisms
+- Shortcomings:
+    - Look at it all, save it all
+    - Not cross-platform
+    - No sharing
+
+
+- DBMS as a solution
+    - incremental fetching
+    - incremental update
+    - Cross-platform
+    - Shared data
+    " There was great rejoicing.."
+    - Keyed relationships between objects.
+
+- EOFramework - Enterprise Object Framework (was in WebObjects, led to CoreData)
+    - EOModeller et al
+        http://support.apple.com/kb/TA26829?viewlocale=en_US
+    - Faulting comes from this.
+        - Faulting is hitting an object/method which isn't defined and then doing a backup/default operation
+    - Acrhiving 1989
+    - DBKit 1992
+    - EOF 1.0 1994
+    - EOF 2.0 1995
+    - CoreData 2005
+    
+    
+Classes v Relations
+    - ...
+
+Core Data is cool
+    - SQLite is good
+    - Makes sync services easy.
+Core Data is Lame
+    - All weakness of relational model
+    - Doesn't connect to a rdbms
+    - developer has less control than in EOF    
+    - Ordered relationships are awkward
+        - Sometimes need intermediate tables.
+        - Have to store an order identifier in order to distinguish itemsno
+    
+NoSQL - http://en.wikipedia.org/wiki/NoSQL
+        - NoSQL is using a key/value list of stores, without the query language. Just navigate as a series of data objects and relationshpis between them.
+    - Use Key-value stores.
+    - OO/graphs databases.
+    - Tokyo Cabinet -> http://1978th.net/tokyocabinet/
+        - Lesser GPL!
+    
+- Example
+    - Inserting 100 songs into 1000 playlists using CoreData takes 8.8s
+    - Sorting and grabbing first title takes 4.2s
+
+
+- BNRPersistence
+    - similar to Core Data
+    - BNRStore/BNRTCBackend/BNRStoredObject/BNRUniquingTable
+    - Backends with berkleydb and others (swappable)
+        - e.g Tokyo Cabinet
+    - Primitive faulting mechanisms, lazy loading on demand
+        
+- Ordered relationships with BNRPersistence
+    - Can store it in the table in toyko cabinate
+    - Instead of ahving a model, readContentFromBuffer: writeContentFromBuffer:
+    - songs = [buffer loadArrayFromTable:@"songs"];
+
+- Example (as for CoreData)
+    - Insert 0.3s
+    - Fetch test 0.1s
+
+- Performance on a Mac
+    - Fetch 1M Songs        BNR 3.6s CoreData 3.1s
+    - Insert 1M songs       BNR 12s  CoreData 56s 5x
+    - Fetch 1K playlists    BNR 0.4s CoreData 5.6s 10x
+    - Insert 1K playlists   BNR 1.2s CoreData 12.0s 10x
+
+- Performance on an iPhone (better and more significant)
+    - Tokyo Cabinet also works on iPhone.
+    - Numbers were on screen but went by too fast to record
+
+BNRPersistence
+    - http://github.com/hillegass/BNRPersistence
+    - MIT License
+    - Appreciates patches.
+    - TODO
+        - Automatic sync
+        - Indices
+        - Some CoreData operations (like fetching) are faster
+        
+Q&A
+- Single threaded?
+    - Would want to make sure that there was only a single thread going through with some kind of lock (not necessarily main thread)
+
+- PrivateFrameworks/PrivateAPIs - would you expect Apple would object?
+    - No problems anticipated.
+    
+- Automated undo support
+    - Built into BNR as well (bit rudimentary)     
+- SQL is good at querying (well, that *is* what the Q stands for)
+    - Index/querying is possible but a bit manual at the moment
+    
+- Can you have multiple relations?
+    - Yes, you can. All the objects write the rowids of the same object.
+
+- Toyko has node-node replication - have you played with it?
+    - No, I haven't.
+
+- Why avoid MacTables and Objective-C++
+    - Don't exist on the phone
+    - Portability
+
+ faster, most inserting is OK
+
+
+16:00 - 17:00 Cocoa Rumble - Conference Speakers and Guests
+-- 
+
+-- Anyone got Twitter address, can you put them by your name in SubEthaEdit's preferences (see my name ->)
+
+
+
+Jason Harris:
+    NSExpression
+        Predicate with subpredicates.
+        Buried in the documentation.
+
+Andy Finell
+    - clc
+    - Command line tool for compiling OpenCL code.
+
+
+
+
+
+
+
+
+WEDNESDAY 3RD FEB 
+(iPhone Conference)
+-----------------
+
+09:15 - 10:15 Conference Keynote: Meet the User - Mike Lee (@bmf)
+-- 
+(matrix reference)
+You are the number 1 expert user of your app, and will often target that user; not good…
+If you are targeting the expert user of your app, your are targeting the wrong user
+As the author of your app, that is the only part of the world that you can't see with your users’ eyes. Use the ability to see the rest of the world as your users do, to feedback into your app.
+Buying Groceries : How everyday annoyances can make you a better engineer 
+What makes parking suck ? Well, the other people in the parking lot obviously
+
+
+1) Boy, this sucks <-- Most people stop at this stage; don’t.
+2) Why does this suck?
+3) How can we make it suck less?
+
+Incomplete design can hit you like a punch (or door) in the face
+
+The ‘which way doors’ should swing argument: open out and you inconvenience people in the street; open in and if the building is on fire people burn.
+
+'Does it work for "the user" or does it work for "everyone"?' @bmf
+
+Everyone who has shipped an app has let pet features and edge cases slip into the shipping product.
+
+Football (American)
+- Make sure you know who you're talking to before mouthing off
+- DirectTV shows insulting adverts on different channels to those who already have the service // But isn't the point of DirectTV to skip ads?
+- I will stop picking on [DirecTV] when you stop pissing me off
+
+It is often possible to come up with a solution for everyone, but it takes work; it may not be the obvious answer.
+
+Your users aren’t interested in your branding. (Splash screens suck.) ‘It’s not a dead pixel; it’s the logo!’ <-- *That’s* user friendly!
+
+- That's rabbit dynamite
+    - Sometimes there's more than one way to say the same thing
+    - Sometimes you just need the right metaphor
+    - The right metaphor is always Monty Python.
+
+- Meaningless versions
+    - Thing
+    - Thing Pro
+    - Thing Home
+    - Thing Work at Home
+    - Thing Small Office
+    - Thing Extreme
+    - Thing Ultra
+    
+
+- Postage
+    - Valentines Postage
+    - Holidays Postage
+    - Bar Mitzvah? Postage
+
+
+- I accidentally the box (?)
+    - It's better to be cleverly obvious than it is to be obviously clever
+    - Opened a box for the case (a ‘case case’, if you will)
+    - Discarded package
+    - Looked like a face
+    - Design not visible until you rip open the box
+    - No-one is impressed with a feature that they can't use (or don't know about)
+
+(Anyone else reminded of the Konami code? http://en.wikipedia.org/wiki/Konami_Code)
+
+- Americans, right?
+    - Human interface is not always rational interface
+    - Farenheiht doesn't make any sense (32F freezing water and 212 boiling)
+    - Celsius makes sense (0 vs 100)
+    - "How many teaspoons are there in a hogshead? Who knows?" // That's what google search box is for :-)
+    - 0 farenheiht is the freezing point of humans, 100 celcius is the boiling point of humans. It kinda does make sense. It’s the human experience…
+    
+    
+- Is science going to buy your app, or are people going to buy your app?    
+    - Difficult to teach people new behaviour
+    - Looking to make it easy for (Existing) human experience, not rational
+    - Better to be consistent than to be right
+    - people are messy
+    
+(screenshot of coffee machine for dispensing water)
+    
+    "What if someone doesn't know how tea works? Let's add another feature ..."
+    
+
+10:45 - 11:45 Hard and Fast OpenGL ES - Jeff LaMarche (@jeff_lamarche)
+-- 
+jeff_lamarche@mac.com
+http://iphonedevelopment.blogspot.com
+
+mostly "jeff_lamarche" in social live. 
+
+http://iphonedevelopment.blogspot.com/2009/05/opengl-es-from-ground-up-table-of.html
+
+- In the beginning...
+    - OpenGL has  a very long history dating back to the '80s
+    - OpenGL ES is a subset of OpenGL designed for embedded systems.
+
+- The Big Obstacle
+    - Workstation OpenGL has something called "Direct Mode"
+    - Direct mode is almost never used in production code, bit it is a good learning tool
+    - OpenGL ES does *not* have Direct Mode.
+    - To create OpenGL ES, they took an old version (1.5) and pared it down
+        - Other backward compatible things no longer needed
+        - No double precision
+    - This makes OpenGL harder to learn if you don’t already have experience with OpenGL
+
+- The Pool
+    - With OpenGL and direct mode, you can slowly wade in
+    - With OpenGL ES, you have to jump into the deep end
+    (and boy, is the water cold ...)
+    - There are currently two versions of OpenGL ES with different iPhone models
+    - OpenGL ES 1.1 - all models (older and newer versions)
+    - OpenGL ES 2.0 - iPhone 3Gs, 32 and 64-gig iPod models
+        most code will not port to 2.0, which means the pool is deeper
+    - Focus on 1.1 if you're starting, you can write for any model
+    - Then move to 2.0 once you know OpenGL
+
+- When to use OpenGL ES
+    - High performance 2d and 3d drawing
+    - You want maximum portability
+- When not to use OpenGL ES
+    - If you don't care about performance/portability
+        - Consider using Core Animation or Core Graphics
+
+- Co-ordinates
+    - Cartesian graphics (y-up is used on iPhone), as well as z-up (CAD system)
+    
+- Datatypes
+    - OpenGL and OpenGL ES define their own data types
+    - GLfloat, GLint, GLuint
+    - Code will be more portable
+    - No chance of runtime conversion
+    - For other values, use non-OpenGL datatypes
+
+- Submiting Data
+    - GLfloat vertex[3]; // 3D point
+        - vertex[0] = 10.0;    // x
+        - vertex[1] = 23.75;   // y
+        - vertex[2] = -12.532; // z
+    - 9 points x 3 co-ordinates
+        - GLfloat vertex[27]; // xyz xyz xyz
+        - Or use a typedef
+            // From Jeff's blog
+            typedef struct {
+                GLfloat x
+                GLfloat y
+                GLfloat z
+            } Vertex3D;
+
+            Vertex3D verticies[9];
+            GLfloat y = vertices[1].y; // instead of vertex[4]
+
+- OpenGL function names
+    - Some functions take multiple versions
+        - If there are multiple versions, the alphabet soup suffix says arg types // e.g. 3f
+            - •b = GLbyte
+            - •s = GLshort
+            - •i = GLint
+            - •f = GLfloat
+            - •ub = GLubyte
+            - •us = GLushort
+            - •ui = GLuint
+        - So, glFooF() would expect a GLFloat to be passed, whilst glFoos() would expect a GLShort
+        - OpenGL may have foo3f and foo4f, OpenGL tends to have just foo4f
+        - Unless it's obvious if there's only one flavour of function
+    - Functions ending with v are a pointer
+        - Passed by reference
+        - Often used for configuration methods
+        const GLfloat light0Position[] = {0.0,10.0,10.0};
+        glLightfv(GL_LIGHT0, GL_POSITION,light0Position); // can send an array
+
+- General performance
+    - Often, when using OpenGL ES you'll be doing many calculations per second
+    - OpenGL ES will offload to the GPU and vector processors, which are capable of doing many floating point operations per second
+    - Means that it's possible to create bottlenecks pretty easily
+    - Don't use objects to store data structures that you're going to have a lot of
+        - Don't represent points/lines/rectangles/polygons as objects
+        - Object allocation is non-trivial when working with large volumes that may change every second
+        - Often the best thing you can do is think like a C programmer
+    - May represent 'big' objects as objects (i.e. those that hold many points/vertices)
+    - Static inline functions are often ideal for small bits of logic that may be called frequently
+    - Trading off a tiny little bit of executable size to avoid function overhead
+    - Function call overhead is small, but several thousand a second can amount to something
+    
+	.h file with such inline files on Jeffs blog:
+    static inline GLfloat Vertex3DCalculateDistanceBetween(Vertex3D first, Vertex3D second) {
+        GLfloat deltax = second.x-first.x;
+        GLfloat deltay = second.y-first.y;
+        GLfloat deltaz = second.z-first.z;
+        return sqrtf(deltax*deltax + deltay*deltay + deltaz*deltaz)
+    }
+    - Avoid allocating/reallocating memory
+        - malloc/calloc/alloc/init
+    - Reuse memory between loop passes wherever possible
+    - Example on iPhone 1; fire particle animation
+    - 1500 particles per second, calculated memory usage, calculated memory usage and pre-allocated that
+    - Performance on iPhone 3Gs may hide performance problems on iPhone 1
+    - Use f versions of  math.h functions
+    - e.g. use sqrtf() instead of sqrt() (which takes double)
+    - OpenGL ES doesn't have GLdouble, only GLfloat - so any math ops using doubles will have implicit conversions taking some time
+
+
+- Thumb
+    - ARM processors
+    - ARM6 and ARM7 processors
+    - Packs two 16 bit opreations into the same space as a 32-bit operation
+    - Twice as many opearations get sent
+- Thumb Bad
+    - The first two versions of the iPhone, iPhone3G and iPod Touches (except 32/64g models) have a downside
+    - Thumb mode can't use vector processors for floating point operations
+    - To use them, it has to unpack thumb ops, do fp, and then back
+    - Does more work than if thumb off
+    - Conclusion: Generally, for OpenGL ES you don't want Thumb on ARM6 (older iPhones), but win on ARM7 (iPhone 3Gs and 32+G iPod Touch)
+
+- XCode conditional build settings
+    - Can create a 'universal' app that gets best performance on both architectures
+    - Build tab of project info settings. ("Compile for thumb")
+    - Usually only get one line in XCode
+    - Star at bottom left allows you to add build setting condition
+    - Can have different values for different architectures. (Any SDK:ARMv6 - no thumb; Any SDK:ARMv7 - thumb; have to enable conditional compile option first)
+
+
+- Triangles and winding rule
+    - OpenGL doesn't support non-triangular polygons (quads and n-gons)
+    - Triangles are used to make polygons
+    - Polygons are single-sided (OpenGL ES)
+    - The order that you feed verticies into the OpenGL ES matters
+    - Winding rule says which is the 'front' (back is not visible)
+        - Clockwise winding - facing away from you - not rendered
+        - Anticlockwise winding - facing towards you
+    (Subtle bug, check this if your stuff doesn't draw)
+
+- Viewports
+    - OpenGL ES has no concept of a camera
+    - You set up a viewport
+    - Two main types
+        - Orthographic // Use for 2D game, since this has no perspective
+          +---+
+          |   |
+          +---+
+        - Frustum      // has perspective
+           +-+   <- viewer, size of screen - approximates a triangle
+          /   \  <- field of view
+         +-----+ <- far point of frustrum
+    - 1.1 gives functions to create/move viewports
+    - 2.0 does not (have to use shaders)
+    - The viewport has a finite depth (things outside are not visible)
+
+- Orhtographic code
+glMatrixMode(GL_PROJECTION)
+CGRect rect {}
+glOrthof(-1.0,1.0,-1.0/(rect.size.width/rect.size.height),1.0/(rect.size.width/rect.size.height),0.001,1000.0) // or something
+- Perpsective viewport (frustum)
+    - Calculating the size of the frustum is a lot more difficult
+    - Fortunately, Google for Copy and Paste
+- Perspective
+glMartixMode(GL_PROJECTION) // enter the glMatrix ...
+glFrustumf(-size,size,-size/(rect.size.width/rect.size.height),size/(rect.size.width/rect.size.height),0.1,1000)
+
+- Submitting Geometry
+    - You don't draw in OpenGL ES
+    - You describe a world, and OpenGL ES draws it for you
+    - To describe the world, you provide an array of vertex data
+    VertexData3D data[100];
+    // fill data[] with, well, data - calc on the fly or load 3D data
+    glEnableClientStat(GL_VERTEX_ARRAY);
+    glVertexPointer(3,GL_FLOAT,sizeof(VertexData3D), &data[0].vertex);
+    - Tell it to draw the data between points
+    glDrawArrays(GL_TRIANGLES,0,100);
+- Enter the Matrix (obligatory matrix reference)
+[x 0 0 0
+ 0 y 0 0
+ 0 0 z 0
+ 0 0 0 1]
+    - There are functions in 1.1 that handle Matrix calculations
+    - The Model View Matrix can be used to manipulate objects
+        - Move, rotate, scale, skew
+    - The projection matrix is used to display the world - takes the 3D and reduces it to 2D
+        - Only turn it on when you enable the projection int he first place.
+
+    - Switching between matrixes
+        - glMatrixMode(GL_PROJECTION);
+        - glMatrixMode(GL_MODELVIEW); // remember to do this after setting up view
+    - The reset button
+        - A lack of transformations is represented by the identity matrix
+        - You can always go back
+        - glLoadIdentity()
+    - Move/draw object/reset/move/draw object/reset/...
+    - Transformations
+        - glTranslatef(0.0f,2.2f,-6.0f); // x,y,z moves
+        - glRotatef(-90.0,1.0,0.0,0.0); // angle, x,y,z to avoid http://en.wikipedia.org/wiki/Gimbal_lock
+        - glScalef(2.0,2.0,2.0); // changes size (doubles in this case)
+    - Transform, draw, reset
+    - Remember to reset between calls to drawView, otherwise it gets moved *each frame*, speeding away
+    
+    opengl_from_ground_up_7_04
+- Lights
+    - OpenGL ES can be used without lights
+    - To get a real-world feeling, you need to define one or more lights
+        - glEnable(GL_LIGHTING); // all you need for 1.1
+        - glEnable(GL_LIGHT0);
+        - glLightfv(GL_LIGHT0, GL_AMBIENT/DIFFUSE/SPECULAR ... )
+        - glLightfv(GL_LIGHT0, GL_POSITION, ...)
+    - Everything disappears into the dark once you turn lights on ...
+    - Got to turn on or configure one of eight "stock" lights
+    http://iphonedevelopment.blogspot.com/2009/05/opengl-es-from-ground-up-part-4-let.html
+    - Done by color (components are red/green/blue/alpha)
+    - OpenGL ES only supports RGBA
+    - Still no lighting on the surface, need to define a "normal".
+
+
+References
+@jeff_lamarche ToC of OpenGL ES blog posts:
+http://iphonedevelopment.blogspot.com/2009/05/opengl-es-from-ground-up-table-of.html
+
+@AlBlue's links on OpenGL http://delicious.com/alblue/opengl
+The key book is the Red Book http://www.opengl.org/documentation/red_book/
+
+12:15 - 13:15 Core Data Synchronization - Marcus Zarra (@mzarra)
+-- 
+
+- Confessions of a Data Flow Guy
+    - No-one else really cares about data flows ...
+    - Until they need them :-)
+    
+- Wouldn't it be nice if your twitter client on your phone and twitter client on your desktop could synchronize the data that you've already read?
+
+http://www.zarrastudios.com/ZSync/ZSync.html
+
+- ZSync (ZedSync)
+    - What does it do?
+        - Core Data
+            - "If you're not using CoreData on the phone, you're not doing it right"
+        - Bonjour
+    - http://beepcore.org/ is BEEP
+    - BLIP is BEEP-Like Protocol
+        - http://bitbucket.org/snej/mynetwork/wiki/BLIP/Overview
+        - http://groups.google.com/group/blip-protocol
+    - SyncServices
+    
+
+- How does it work?
+    - Delegate on iPhone
+    - Registers with ZSyncHandler
+    - Calls back with updates (sync started, server not found, list of servers)
+        - Sync Started
+        - Server not found
+        - List of servers
+    - Requests pairing with (one of the) servers
+        - Pairing can be accepted/rejected (like in Keynote when pairing with a remote, for security)
+        - Passcode can be passed to authenticate/authorize
+    - Sync Services uses single 'truth database' (Singleton, hah ...)
+    - All applications can consult the truth
+    - Syncrospector.app can be used to consult the truth database (/Developer/Applications/Utilities)
+
+GitHub reference:
+http://github.com/mzarra/ZSync
+
+- Phase I
+    - Merging always happens on the desktop
+    - "Slow" and "fast" syncing:
+        - fast syncing is not available on the iPhone (not implemented by Apple in Core Data)
+    - "Slow" syncing in Phase I
+    - 90% complete, deployment of daemon not done yet (currently is just an app)
+    - Will come out when MoneyWell iPhone app is ready (March?). Kevin Hoctor, NoThirst Software
+    - WiFi syncing only in this version
+
+- Phase II
+    - Reverese engineer fast sync
+    - Mac to Mac syncing (without MobileMe as a middleman)
+    - Planned for Apr/May timeframe
+    - Plans from http://iphonedevcampcolorado.pbworks.com/
+
+- Phase III
+    - Cloud syncing over 3G, Wifi etc.
+    - Easy to use, affordable
+    - Could put up your own server using the source code
+    
+"Make it as free as possible" - syncing to the cloud, source will be open
+
+- Licensing
+    - BSD
+    - Available on: http://github.com/mzarra/ZSync
+
+Q&A
+- Why don't use something like Git instead?
+    - Really like SyncServices
+    - Won't be using SyncServices for the sync-to-cloud
+    - Need to run on all platforms
+
+- SyncServices and Schema?
+    - Core Data does Sync Services right
+    - Data model allows you to update 'sync' column with data
+
+- How does/will ZSync to do incremental development of the sync scheme
+    - Versioning, like Sync Services
+    - You can build/query CoreData model on the fly, which will be used
+    - Not the plist stuff from sync services
+
+Don't stick binary objects in Core Data / Sync Services - major performance impacts
+
+- Will it handle 2 000 000 data (5% change weekly)?
+    - Should work
+
+- iPhone to iPhone? iPhone to multiple Macs?
+    - Probably not the latter, the former is on the radar
+
+- Sync services lets you get at anything in the truth database, even ones another dev put in there.
+
+- Damien is a daemon that loads bundles
+
+- It's Wifi-only
+    - Cloud service planned to work with 3G
+
+- Plans to only use public API, so should be iPhone-safe
+
+- Developers welcome!
+
+Time scale: Phase 1: After NSConf Atlanta; "Cloud Sync" (phase 3) is most exciting piece.
+
+
+LUNCHTIME SESSIONS:
+
+- Aral Balkan (@aral, @avitapp) on usability, empathy and delight. Examples: iPhone app 'avit http://avitapp.com, http://silverbackapp.com/
+
+- ??? The Race to the bottom doesn't happen in niche apps. (Sells cow-passport-tracking app to UK farmers -- has to sell them on the iPhone as well)
+
+- Springback: NSArchiver-style persistence for iPhone app state by Daniel Tull (@danielctull)
+
+
+
+14:30 - 15:30 The Physics of Sumo: Developing Games with Core Animation - Drew McCormack  (@drewmccormack)
+-- 
+
+NB Most of this was a sequence of animations/shots which are not easy to describe here; in addition, the code samples were rather small fonts and thus not easy to see. So the notes for this are somewhat lighter than the other talks.
+
+- Sumo Master is completely based on Core Animation
+- If you want to do a game, you should probably use OpenGL instead of CoreAnimation
+
+http://appshopper.com/games/sumo-master
+
+Stock music from online music library - $30(ish).
+
+- Started with simple prototype:
+    - little box layers that run after or from one another
+    - "confetti" circles that collide with each other and get repulsed
+    - Physics not yet realistic, billiard balls, not sponges
+    - Rotated two half-transparent pictures on top of each other at different speeds to simulate lava effect around court (dropped in the game)
+    
+
+- Designer friend added to the (intentionally ugly) placeholder graphics
+    - wrinklypeadesign - http://www.wrinklypea.com/
+
+The menu system flips over using standard CoreAnimation features. You can put a JPEG in the background so you see it when you flip e.g. using the main page
+
+modaltranisition property to one of the three flips - didn't get exactly
+Then just use built in method to present modal view controller and the animation style from the view controller will be used.
+
+
+
+// So they fade in one after another
+[UIView beginAnimation]
+[UIView setAnimationDelay(delay*tag)]
+f.origin.x = f.origin.x-width;
+[UIView commitAnimation]
+
+// Animating dialog appearing
+
+[CATransaction begin]; // Font is bit too small for me :-/
+translate = CATransformMakeScale(2.0,2.0,2.0)
+containerView.layer.transfomer = translate;
+[CATransaction comit];
+
+
+[UIView beginAnimations:"@Appear" context:NULL]
+[UIView setAnimationDuration:0.25]
+[UIView setAnimationDelegate:self]
+[UIView setAnimationDidStopSelector:@selector(appearAnimationDidStop:finished
+// dying sumo animation (?) yeah, fade in then out and to transparent, probably
+app = [CAKeyFrameAnimation animationWithKeyPath:@"transform"];
+app.duration = 1.5;
+app.keyTimes =
+app.values = [ NSValue valueWithCAKeyframe...]
+[sumoLayer addAnimation:app forKey@"bounce up"];
+
+- Animating sequences
+
+- Create animation sequences with different delays and durations
+    - delay, duration
+    - 0s, 0.5s
+    - 0.5s, 1.0s
+    - 1.5s, 0.5s
+    - 2.0s, 1.0s
+    
+- For any property, you can only have one animation in-flight in time
+- If you need to animate the same property twice, you have to register delegate
+    - animationDidStop: (http://www.cimgf.com/2008/11/05/core-animation-tutorial-interrupting-animation-progress/)
+    - Called upon animation finish
+    - Can then queue up the next one
+    
+    CATransform3DConcat allows you to concatenate animations together
+CAKeyframeAnimation...
+animation.autoreverse=YES
+animation.duration=0.4s
+animation.values = [NSArray arrayWithObjects: CGimgage1, CGimage2,nil];
+animation.mode?= kCAAnimationLinear/Discrete/Paced
+
+
+- Performance tips
+    - Reduce the number of layers
+        - surprising how few layers you need before iPhone will jerk
+        - sumo has <15 layers
+        - More than 5 opponents struggled with the layers
+    - Merge layers where possible
+    - Smaller layers reduce drawing
+    - Opaque layers preferred
+    - Cache CATranslation3D
+
+Q&A
+- Implemented your own physics engine?
+    - Yes, for the fun. Should use chipmunk(?) or Cocoa2d(?) engines that are out there.
+    
+- This was for fun, wanna share numbers?
+    - App was featured by Apple as a staff pick
+    - 500/600 sales in total
+    - Not an iPhone success story, financially
+    
+
+Further reading:
+    - http://bit.ly/sumophysics
+    - http://www.macresearch.org/cocoa-scientists-xxxii-physics-sumos-flirtation-iphone-game-development
+
+16:00 - 17:00 Supporting Online Play and GameKit in your app - Jeff LaMarche (@jeff_lamarche)
+-- 
+
+
+- GameKit
+    - Is a provided framework
+    - One of the primary features is to facilitate easy network play over bluetooth
+    - This feature can't be used on the iPhone 1G or first iPod Touch because they don't have the bluetooth protocols used in GameKit
+    - GameKit doesn't support non-Bluetooth online play (LAN or Internet)
+        - the hope is that this would happen in the future
+    - GameKit does provide a 'hook' for letting the user choose between online and local (bluetooth) play
+    - If the user selects online play
+        - Could mean LAN or Internet
+
+    - Main focus of GameKit shouldn't be a surprise
+    - Designed for networkable games
+
+- Limitations
+    - Specific to iPhone 
+    - Can't be used to communicate with standard protocols
+    - Can't communicate with bluetooth on desktop machines
+    
+- Terminology
+    - Any connected phone is a 'node' or 'peer'
+    - The object that connects you to a peer is called a 'session'
+    - The dialog used to select a peer is a 'peer picker'
+    - If configured to do so, will over the choice of online or local (bluetooth) play
+
+- Supports multiple peers
+- The peer picker doesn't support that
+    - There are hints in the API that it might in the future
+    - If Apple asks, I didn't say that ^^^
+
+
+- Online play
+    - When the user selects the online button, GameKit passes back to you
+    - Have to use CFNetwork, Bonjour to do everything
+        - No, really, EVERYTHING
+        - Back to this in a bit
+
+- Local play
+    - Create a GKPeerPickerController
+    - Give it a delegate
+        - Usually the controller, but doesn't have to be
+
+GKPeerPickerContrioller *picker = [[GKPeerPikcerController alloc] init];
+picker.delegate = self;
+picker.connectionTypesMask = GKPeerPIckerConnectionTypeOnLine | GKPeerPIckerConnectionTypeNearby
+[picker show];
+// If only OnLine, throws an exception
+
+-(void)peerPickerController:(GKPeerPickerController *)picker didSelectConnectionType(GKPeerConnectionType) type {..}
+
+-(GKSession *)peerPickerControll:(GKPeerPickerController*)picker sessionForConnectionType(GKPeerControllerType*)type
+{
+    GKSession *theSession = [[GKSession alloc] initWithSessionID:@"bonojourID" displayName:nil sessionMode:GKSessionModePeer];
+    return [thesession autorelease];
+}
+
+- GKPeerPicker only used to find other finds - not the actual game session
+
+- Session modes
+    - GKSessionModeServer: listens for connections
+    - GKSessionModeClient: looks for servers to connect to
+    - GKSessionModePeer: both listens and looks
+- In most situations GKSessionModePeer is the friendliest
+    - Most casual users don't grok client/server
+
+- After the connection
+    - If/when a peer connects, another delegate method gets called
+    - Once connection is made, delegate's responsible for dismissing the picker
+    - Also needs to specify the session's delegate
+        - We created delegate earlier, but now it's connected, we need to fill in the blanks
+        
+-(void)peerPickerController((GKPeerPickerController *)picker didConnectPeer:(NSString*) id toSession:(GKSession*) thesession)
+{
+    self.session = theSession;
+    se.fssession.delegate = self;
+    [self .session setDataRecivedHAndelr:self withContext:NULL];  // Unnecessary line of code ????
+    
+    [picker dismiss];
+    picker.delegate = nil;
+    [picker release];        
+    
+    // Start game or other online funcitonality
+}
+
+Still in Fire and Forget Mode
+    - The Peer picker is done, but now the Session is spun off and doing its thing
+    - Delegate methods will once again be called to nofity you when something has happend or needs to happen        
+        
+        
+- Session Failed
+    - If the GameKit ssession encoutres an eeror thed elegate gets notified
+    
+- (void)Session: (GKSession *)theSesion didFailWithError:(NSError* )error
+{
+    [the Session disconnectFromAllPeers];
+    theSession.delegate = nil;
+    [theSession setDataReceiveHandler=nil];
+}        
+        
+- Data Receive Handler
+    - Gets notification when data is sent ffom a peer
+    - Will get sent to you fi you don't specify delegate
+    
+- Session state
+    - When session chagnes state, another notification occurs
+    - Mostly occurs because of disconnect
+    - About six different states
+
+-(void)Session: peer: didChagneState: {
+    if(instate == GKPeerStateDisconnected) {
+        theSession.avaliable;
+        [thesession disconenctFromAllP{eers]
+        theSession.delegate = nil;
+        [thesession setDataReceiveHandler:nil withContext:nil];
+        self.session = nil;
+    }
+}
+
+- Sending data to peers
+    - couldn't be easier
+    - stick information into an NSData instance
+    - Use an instance method in GKSession to send it
+    
+if(session) {
+if(![session sendDataToaAllPeers:data withDataMode:GKSendDataaReliable error: &error] { handle eerror } }
+
+- Can send to all peers, or to specify peers
+    - sendDataToPeers:[list of peers]
+
+- Data Mode
+    - Any time you send data, you specify mode
+    - GKSendDataReliable - slower, but much more reliable // Ala TCP
+    - GKSendDataUnreliable - faster, but not so reliable // ala UDP 
+    (both probably use UDP though)
+
+- Recieving data from peers
+    - Delegate gets notified when data comes in from a peer
+    - With GameKLit, data always comes in intact.  Your delegate is passed off the NSData instance that the other peer sent
+    - PAssed the NSData instance that gets passed in
+        - Transmition details are hidden
+    
+
+-(void) receiveData:(NSData*)data fromPeer:(NSString*)id inSession:(GKSession *)session context:(void *)context
+{
+    // whatever
+    // can't guarantee order of behaviour
+}
+
+
+- Easy way
+    - Networking with local devices is wonderfully easy
+    - Online play isn't
+        - Open a bug (http://bugreport.apple.com) 
+
+- Online Play
+    - If you configure Peer Picker for online play you're on your own
+    - Basic flow:
+        - Setup a listner
+        - Use Bonjour to advertise availability
+        - Establish inbound and outbound streams
+        - Send/Receive data
+
+- Listener
+    - Set up a socket with CFNetwork (back into the land of C)
+    - Not that bad
+    - If you do want to be a good Objective-C developer, you need to be a good C developer
+        
+        
+- Sample code at http://iphonedevbook.com/forum (Chapter 9, Tic Tac Toe project)
+
+
+Q&A:
+    - How does all of this scale?
+        - Jeff hasn't done testing yet.
+
+vv CHAT vv
+
+^^ CHAT ^^
+
+*** See Alex Repty (@arepty) if you wish to contribute to Scotty's gift, we're still a little bit short. ***
+
+
+Footnotes:
+----------
+
+iPad Mockup Templates:
+    
+    - http://public.me.com/creed_nmd (Andy Warwick: @creednmd)
+      The DPI in the file *should* be a straight match for the actual device resolution, and it should print actual size at 100%.
+        
+    - http://files.droplr.com/files/679073/iPWcE.ipad_stencil.pdf
+    - http://www.teehanlax.com/blog/2010/02/01/ipad-gui-psd/
+
+-------------------------------------------------------------------------------
+NOTES ON / KEY TO THIS MODE:
+HEADLINES
+    ... have to be CAPITALISED and stand alone in a line to be recognized
+    This differentiates from the text that follows
+A _variable_ that you can change will be surrounded by _underscores_
+    Spaces in variables are also replaced with _under_scores_
+    This allows people to select the whole _variable_ with a simple double-click
+A {tool-tip} is lower case and surrounded by {curly brackets / parentheses}
+    These supply helpful contextual information.
+References should be added as [1] [2] and so forth.
+An *emphasis* can be put on a word by adding *stars* around it
+
+Hint: - use the 'Save a copy as' menu item so you don't have to copy paste.
